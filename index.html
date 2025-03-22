@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hazırlanıyor...</title>
+    <title>Kodlar Yükleniyor...</title>
     <style>
         body {
             margin: 0;
@@ -12,69 +12,354 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f5f5f5;
-            font-family: 'Arial', sans-serif;
+            background-color: #0e0e23;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            color: #e0e0e0;
+            overflow: hidden;
         }
         
         .container {
             text-align: center;
+            max-width: 900px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
         }
         
         h1 {
-            color: #333;
-            margin-bottom: 20px;
+            color: #00ff9d;
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
         }
         
-        .spinner {
-            width: 60px;
-            height: 60px;
-            margin: 30px auto;
-            border: 8px solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top: 8px solid #3498db;
-            animation: spin 1.5s linear infinite;
+        .subtitle {
+            color: #9580ff;
+            font-size: 18px;
+            margin-bottom: 40px;
         }
         
-        .progress {
-            width: 300px;
-            height: 10px;
-            background-color: #e0e0e0;
+        .error-container {
+            background-color: #1a1a36;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #ff5370;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+        
+        .error-title {
+            color: #ff5370;
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .error-title svg {
+            margin-right: 10px;
+        }
+        
+        .error-message {
+            color: #babed8;
+            margin: 10px 0;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        
+        .error-stack {
+            background-color: #161630;
+            padding: 15px;
             border-radius: 5px;
-            margin: 20px auto;
-            overflow: hidden;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #c3e88d;
+            overflow: auto;
+            max-height: 120px;
         }
         
-        .progress-bar {
+        .line-number {
+            color: #676e95;
+            margin-right: 15px;
+            user-select: none;
+        }
+        
+        .fix-button {
+            background-color: #00ff9d;
+            color: #0e0e23;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            margin-top: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .fix-button:hover {
+            background-color: #00cc7d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 157, 0.4);
+        }
+        
+        .loading-status {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #9580ff;
+            height: 24px;
+        }
+        
+        .matrix-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
             height: 100%;
-            width: 0;
-            background-color: #3498db;
-            animation: progress 3s ease-in-out infinite;
+            z-index: 1;
+            opacity: 0.15;
         }
         
-        p {
-            color: #666;
+        .coffee-mug {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            position: relative;
         }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .coffee-mug .mug {
+            width: 70px;
+            height: 60px;
+            background-color: #c3c3c3;
+            border-radius: 5px 5px 40px 40px;
+            position: relative;
         }
         
-        @keyframes progress {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
+        .coffee-mug .handle {
+            width: 20px;
+            height: 30px;
+            border: 6px solid #c3c3c3;
+            border-radius: 10px;
+            position: absolute;
+            top: 10px;
+            right: -20px;
+        }
+        
+        .coffee-mug .coffee {
+            width: 60px;
+            height: 20px;
+            background-color: #6f4e37;
+            position: absolute;
+            top: 10px;
+            left: 5px;
+            border-radius: 0 0 30px 30px;
+            animation: drinkCoffee 5s infinite;
+            transform-origin: center top;
+        }
+        
+        .coffee-mug .steam {
+            position: absolute;
+            top: -25px;
+            left: 15px;
+        }
+        
+        .steam-particle {
+            width: 8px;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            position: absolute;
+            animation: steamRise 2s infinite ease-out;
+        }
+        
+        .steam-particle:nth-child(1) {
+            left: 0;
+            animation-delay: 0.2s;
+        }
+        
+        .steam-particle:nth-child(2) {
+            left: 20px;
+            animation-delay: 0.6s;
+        }
+        
+        .steam-particle:nth-child(3) {
+            left: 40px;
+            animation-delay: 0.4s;
+        }
+        
+        .cat {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-size: 50px;
+            animation: catWalk 15s infinite linear;
+            z-index: 3;
+        }
+        
+        @keyframes catWalk {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100vw); }
+        }
+        
+        @keyframes steamRise {
+            0% { transform: translateY(0) scale(1); opacity: 0.7; }
+            100% { transform: translateY(-20px) scale(1.5); opacity: 0; }
+        }
+        
+        @keyframes drinkCoffee {
+            0% { height: 20px; }
+            80% { height: 5px; }
+            100% { height: 20px; }
+        }
+        
+        .funny-messages {
+            animation: cycleMessages 10s infinite;
+            height: 24px;
+            display: block;
+        }
+        
+        @keyframes cycleMessages {
+            0%, 16% { content: "Spaghetti kodumuz pişiriliyor..."; }
+            17%, 33% { content: "Git çakışmaları çözülüyor (kolay olmayacak)..."; }
+            34%, 50% { content: "Favicon.ico hâlâ bulunamadı..."; }
+            51%, 67% { content: "404 hatası aranıyor..."; }
+            68%, 84% { content: "Console.log'lar siliniyor..."; }
+            85%, 99% { content: "Denedik olmadı, tekrar deniyoruz..."; }
         }
     </style>
 </head>
 <body>
+    <div class="matrix-bg" id="matrix"></div>
+    
     <div class="container">
-        <h1>Sayfa Hazırlanıyor</h1>
-        <div class="spinner"></div>
-        <div class="progress">
-            <div class="progress-bar"></div>
+        <h1>&lt;Loading.bug /&gt;</h1>
+        <p class="subtitle">Tam anlamıyla yüklü bir yazılımcı deneyimi yaşıyorsunuz...</p>
+        
+        <div class="coffee-mug">
+            <div class="mug">
+                <div class="coffee"></div>
+                <div class="handle"></div>
+                <div class="steam">
+                    <div class="steam-particle"></div>
+                    <div class="steam-particle"></div>
+                    <div class="steam-particle"></div>
+                </div>
+            </div>
         </div>
-        <p>Lütfen bekleyiniz...</p>
+        
+        <div class="error-container">
+            <div class="error-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 8V12M12 16H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#ff5370" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                TypeError: cannot read property 'hazirlaniyor' of undefined
+            </div>
+            <div class="error-message">
+                Sayfa yüklenirken karşılaşılan sorunlar üzerinde çalışıyoruz. Bu sorun genellikle yazılımcının bilgisayarında çalışırken, canlı ortamda çalışmamasından kaynaklanır.
+            </div>
+            <div class="error-stack">
+                <div><span class="line-number">42</span>const sayfa = hazirla();</div>
+                <div><span class="line-number">43</span>if (sayfa.hazirlaniyor) {</div>
+                <div><span class="line-number">44</span>  return "Yükleniyor...";</div>
+                <div><span class="line-number">45</span>} else {</div>
+                <div><span class="line-number">46</span>  throw new Error("Benim bilgisayarımda çalışıyordu!");</div>
+                <div><span class="line-number">47</span>}</div>
+            </div>
+        </div>
+        
+        <button class="fix-button">OTOMATİK DÜZELT</button>
+        
+        <div class="loading-status">
+            <span class="funny-messages"></span>
+        </div>
     </div>
+    
+    <div class="cat">🐈</div>
+    
+    <script>
+        // Matrix efekti
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        document.getElementById('matrix').appendChild(canvas);
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const characters = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン01".split("");
+        const columns = Math.floor(canvas.width / 20);
+        const drops = Array(columns).fill(0);
+        
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(14, 14, 35, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ff9d';
+            ctx.font = '15px monospace';
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = characters[Math.floor(Math.random() * characters.length)];
+                ctx.fillText(text, i * 20, drops[i] * 20);
+                
+                if (drops[i] * 20 > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                
+                drops[i]++;
+            }
+        }
+        
+        setInterval(drawMatrix, 80);
+        
+        // Esprili mesajlar
+        const funnyMessages = [
+            "Spaghetti kodumuz pişiriliyor...",
+            "Git çakışmaları çözülüyor (kolay olmayacak)...",
+            "Favicon.ico hâlâ bulunamadı...",
+            "404 hatası aranıyor...",
+            "Console.log'lar siliniyor...",
+            "Denedik olmadı, tekrar deniyoruz..."
+        ];
+        
+        const messageElement = document.querySelector('.funny-messages');
+        let messageIndex = 0;
+        
+        function updateMessage() {
+            messageElement.textContent = funnyMessages[messageIndex];
+            messageIndex = (messageIndex + 1) % funnyMessages.length;
+        }
+        
+        updateMessage();
+        setInterval(updateMessage, 3000);
+        
+        // Düzeltme butonu ile hata mesajını "düzeltme"
+        const fixButton = document.querySelector('.fix-button');
+        const errorContainer = document.querySelector('.error-container');
+        
+        fixButton.addEventListener('click', function() {
+            this.textContent = "DÜZELTİLİYOR...";
+            this.disabled = true;
+            
+            setTimeout(() => {
+                errorContainer.innerHTML = `
+                    <div class="error-title" style="color: #c3e88d">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 12L10 17L20 7" stroke="#c3e88d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Sorun çözüldü: try { ... } catch(e) { /* TODO: fix later */ }
+                    </div>
+                    <div class="error-message">
+                        Hata profesyonel bir şekilde halının altına süpürüldü. Sayfanız birazdan hazır olacak!
+                    </div>
+                `;
+                
+                this.textContent = "BAŞARIYLA DÜZELTİLDİ";
+                this.style.backgroundColor = "#c3e88d";
+            }, 3000);
+        });
+    </script>
 </body>
 </html>
